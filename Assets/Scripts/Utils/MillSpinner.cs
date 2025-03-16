@@ -1,15 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
+#region
+
 using DG.Tweening;
 using UnityEngine;
 
-public class MillSpinner : MonoBehaviour
+#endregion
+
+namespace Utils
 {
-    [Range(1, 15)] public float SpinSpeed = 10f;
-    void Start()
+    public class MillSpinner : MonoBehaviour
     {
-        transform.DOLocalRotate(new Vector3(0, 0, 360f), SpinSpeed, RotateMode.FastBeyond360)
-            .SetLoops(-1, LoopType.Restart)
-            .SetEase(Ease.Linear);
+        [Range(1, 15)] public float spinSpeed = 10f;
+
+        private void Start()
+        {
+            transform.DOLocalRotate(new Vector3(0, 0, 360f), spinSpeed, RotateMode.FastBeyond360)
+                .SetLoops(-1, LoopType.Restart)
+                .SetEase(Ease.Linear);
+        }
     }
 }
