@@ -2,6 +2,7 @@
 
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #endregion
 
@@ -10,7 +11,7 @@ namespace Building
     public class Building : MonoBehaviour
     {
         private Vector3 _initialScale;
-
+        
         private void Awake()
         {
             _initialScale = transform.localScale;
