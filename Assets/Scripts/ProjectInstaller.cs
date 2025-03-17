@@ -9,6 +9,6 @@ public class ProjectInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
-        Container.Bind<IResourceManager>().To<ResourceManager>().AsSingle();
+        Container.Bind<IResourceManager>().To<ResourceManager>().AsSingle().NonLazy();
     }
 }

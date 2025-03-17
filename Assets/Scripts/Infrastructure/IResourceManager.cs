@@ -1,3 +1,5 @@
+using System;
+
 namespace Infrastructure
 {
     public interface IResourceManager
@@ -6,5 +8,6 @@ namespace Infrastructure
         void AddResource(ResourceType resourceType, int amount);
         bool ConsumeResource(ResourceType resourceType, int amount);
         
+        IObservable<(ResourceType resourceType, int newAmount)> OnResourceChanged { get; }
     }
 }

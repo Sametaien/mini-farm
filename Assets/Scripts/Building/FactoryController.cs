@@ -13,7 +13,7 @@ using Zenject;
 
 namespace Building
 {
-    public class FactoryController : MonoBehaviour
+    public class FactoryController : MonoBehaviour, IFactoryController
     {
         [Header("Factory Data")] public FactoryData factoryData;
 
@@ -106,7 +106,7 @@ namespace Building
                         return;
                 }
 
-                _factoryModel.CurrentProductionAmount.Value += _factoryModel.OutputAmount;
+                _factoryModel.Deposit.Value += _factoryModel.OutputAmount;
 
                 if (!_factoryModel.IsFull.Value) _factoryModel.RemainingTime.Value = _factoryModel.ProductionTime;
             }
@@ -115,11 +115,11 @@ namespace Building
 
         public void CollectOutput()
         {
-            var amount = _factoryModel.CurrentProductionAmount.Value;
+            var amount = _factoryModel.Deposit.Value;
             if (amount <= 0) return;
 
             _resourceManager.AddResource(_factoryModel.OutputResource, amount);
-            _factoryModel.CurrentProductionAmount.Value = 0;
+            _factoryModel.Deposit.Value = 0;
         }
 
 
@@ -130,8 +130,8 @@ namespace Building
             var saveData = new FactorySaveData
             {
                 factoryId = _factoryModel.FactoryId,
-                currentProductionTime = _factoryModel.RemainingTime.Value,
-                currentProductionAmount = _factoryModel.CurrentProductionAmount.Value,
+                remainingTime = _factoryModel.RemainingTime.Value,
+                deposit = _factoryModel.Deposit.Value,
                 lastUpdateTicks = DateTime.Now.Ticks
             };
 

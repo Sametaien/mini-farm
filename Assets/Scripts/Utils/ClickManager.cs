@@ -19,7 +19,12 @@ namespace Utils
             if (Physics.Raycast(ray, out var hit, 100f, buildingLayer))
             {
                 var buildingObject = hit.collider.TryGetComponent(out Building.Building building);
-                if (buildingObject) building.Highlight();
+                if (buildingObject)
+                {
+                    building.Highlight();
+                    building.ShowBuildingUI();
+                    building.CollectResources();
+                }
             }
         }
     }

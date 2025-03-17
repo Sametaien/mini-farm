@@ -32,7 +32,7 @@ namespace UI
 
             _disposable.Clear();
 
-            _factoryModel.CurrentProductionAmount
+            _factoryModel.Deposit
                 .Subscribe(amount => { depositText.text = $"{amount}"; })
                 .AddTo(_disposable);
 
