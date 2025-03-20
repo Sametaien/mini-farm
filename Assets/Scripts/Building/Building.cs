@@ -14,8 +14,8 @@ namespace Building
 
         private void Awake()
         {
-            _initialScale = transform.localScale;
             buildingUICanvas.SetActive(false);
+            _initialScale = transform.localScale;
         }
 
         public void Highlight()
@@ -35,6 +35,12 @@ namespace Building
         {
             if (buildingUICanvas != null && !buildingUICanvas.activeSelf)
                 buildingUICanvas.SetActive(true);
+        }
+
+        public void HideBuildingUI()
+        {
+            if (buildingUICanvas != null && buildingUICanvas.activeSelf)
+                buildingUICanvas.SetActive(false);
         }
 
         public void CollectResources()

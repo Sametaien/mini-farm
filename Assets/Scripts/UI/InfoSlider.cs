@@ -17,8 +17,9 @@ namespace UI
 
         [SerializeField] private TextMeshProUGUI depositText;
         [SerializeField] private TextMeshProUGUI statusText;
-        private readonly CompositeDisposable _disposable = new();
+        [SerializeField] private TextMeshProUGUI capacityStatusText;
 
+        private readonly CompositeDisposable _disposable = new();
         private FactoryModel _factoryModel;
 
         private void OnDestroy()
@@ -37,24 +38,36 @@ namespace UI
                 .AddTo(_disposable);
 
             _factoryModel.RemainingTime
-                .Subscribe(remaining =>
+                .CombineLatest(_factoryModel.IsDepositFull, (remaining, isFull) => (remaining, isFull))
+                .Subscribe(tuple =>
                 {
+                    var (remaining, isFull) = tuple;
+
                     var progress = 1f - remaining / _factoryModel.ProductionTime;
                     progressSlider.value = Mathf.Clamp01(progress);
 
-                    if (_factoryModel.IsFull.Value)
+                   
+                    if (isFull)
                         statusText.text = "Full";
-                    else
+                    else if (remaining > 0f)
                         statusText.text = $"{Mathf.Ceil(remaining)}s";
+                    else
+                        statusText.text = "Idle";
                 })
                 .AddTo(_disposable);
 
-            _factoryModel.IsFull
-                .Subscribe(isFull =>
-                {
-                    if (isFull) statusText.text = "Full";
-                })
+            _factoryModel.QueueCount
+                .Subscribe(_ => UpdateCapacityStatusText())
                 .AddTo(_disposable);
+
+            UpdateCapacityStatusText();
+        }
+
+        private void UpdateCapacityStatusText()
+        {
+            var total = _factoryModel.QueueCount.Value + _factoryModel.Deposit.Value;
+            var cap = _factoryModel.Capacity;
+            capacityStatusText.text = $"{total}/{cap}";
         }
     }
 }

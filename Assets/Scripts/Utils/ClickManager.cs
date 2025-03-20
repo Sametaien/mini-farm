@@ -1,5 +1,6 @@
 #region
 
+using System;
 using UnityEngine;
 
 #endregion
@@ -11,20 +12,40 @@ namespace Utils
         [SerializeField] private Camera mainCamera;
         [SerializeField] private LayerMask buildingLayer;
 
+
+        private Building.Building _selectedBuilding;
+
+        private void Awake()
+        {
+            if (mainCamera == null)
+                mainCamera = Camera.main;
+        }
+
         private void Update()
         {
             if (!Input.GetMouseButtonDown(0)) return;
+
             var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out var hit, 100f, buildingLayer))
             {
-                var buildingObject = hit.collider.TryGetComponent(out Building.Building building);
-                if (buildingObject)
+                if (hit.collider.TryGetComponent<Building.Building>(out var clickedBuilding))
                 {
-                    building.Highlight();
-                    building.ShowBuildingUI();
-                    building.CollectResources();
+                    if (_selectedBuilding != null && _selectedBuilding != clickedBuilding)
+                        _selectedBuilding.HideBuildingUI();
+
+                    _selectedBuilding = clickedBuilding;
+
+                    _selectedBuilding.Highlight();
+                    _selectedBuilding.ShowBuildingUI();
+                    _selectedBuilding.CollectResources();
                 }
+            }
+            else
+            {
+                if (_selectedBuilding == null) return;
+                _selectedBuilding.HideBuildingUI();
+                _selectedBuilding = null;
             }
         }
     }

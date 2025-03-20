@@ -6,7 +6,9 @@ using Cysharp.Threading.Tasks;
 using Data;
 using Infrastructure;
 using UI;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 #endregion
@@ -18,6 +20,11 @@ namespace Building
         [Header("Factory Data")] public FactoryData factoryData;
 
         [Header("UI Elements")] public InfoSlider progressSlider;
+
+        [SerializeField] private Button produceButton;
+        [SerializeField] private Button cancelButton;
+
+        private readonly CompositeDisposable _disposables = new();
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -37,6 +44,16 @@ namespace Building
 
             progressSlider.SetFactoryModel(_factoryModel);
 
+            _resourceManager.OnResourceChanged.Subscribe(_ => UpdateButtonInteractivity()).AddTo(_disposables);
+
+            _factoryModel.IsDepositFull.Subscribe(_ => UpdateButtonInteractivity()).AddTo(_disposables);
+
+            _factoryModel.QueueCount
+                .Subscribe(_ => UpdateButtonInteractivity())
+                .AddTo(_disposables);
+
+            UpdateButtonInteractivity();
+
             if (_factoryModel.QueueCount.Value > 0) StartProduction().Forget();
         }
 
@@ -47,6 +64,7 @@ namespace Building
             SaveFactoryData();
 
             _factoryModel?.Dispose();
+            _disposables.Dispose();
         }
 
         private void OnApplicationPause(bool pause)
@@ -68,6 +86,8 @@ namespace Building
 
             _resourceManager.AddResource(_factoryModel.OutputResource, amount);
             _factoryModel.Deposit.Value = 0;
+
+            UpdateButtonInteractivity();
         }
 
         [Inject]
@@ -116,7 +136,7 @@ namespace Building
 
         public void EnqueueProduction()
         {
-            if (_factoryModel.IsFull.Value)
+            if (_factoryModel.IsQueueFull.Value)
             {
                 Debug.Log("[ManualFactory] Capacity is full. Cannot enqueue production.");
                 return;
@@ -135,6 +155,8 @@ namespace Building
             _factoryModel.QueueCount.Value++;
 
             if (!_isProducing) StartProduction().Forget();
+
+            UpdateButtonInteractivity();
         }
 
         public void CancelOneProduction()
@@ -148,6 +170,8 @@ namespace Building
             _factoryModel.QueueCount.Value--;
 
             // _resourceManager.AddResource(_factoryModel.InputResource, _factoryModel.InputAmount);
+
+            UpdateButtonInteractivity();
         }
 
         private void SaveFactoryData()
@@ -164,6 +188,24 @@ namespace Building
             };
 
             SaveSystem.SaveFactory(saveData);
+        }
+
+        private void UpdateButtonInteractivity()
+        {
+            var canProduce = !_factoryModel.IsQueueFull.Value;
+
+            if (_factoryModel.InputResource != ResourceType.Null && _factoryModel.InputAmount > 0)
+            {
+                var currentResource = _resourceManager.GetResourceAmount(_factoryModel.InputResource);
+                if (currentResource < _factoryModel.InputAmount) canProduce = false;
+            }
+
+            if (produceButton != null)
+                produceButton.interactable = canProduce;
+
+            var canCancel = _factoryModel.QueueCount.Value > 0;
+            if (cancelButton != null)
+                cancelButton.interactable = canCancel;
         }
     }
 }

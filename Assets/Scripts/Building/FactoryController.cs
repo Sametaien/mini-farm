@@ -73,7 +73,7 @@ namespace Building
 
             while (_isProducing)
             {
-                if (_factoryModel.IsFull.Value)
+                if (_factoryModel.IsDepositFull.Value)
                 {
                     await UniTask.Yield(PlayerLoopTiming.Update, _cancellationTokenSource.Token);
                     continue;
@@ -92,7 +92,7 @@ namespace Building
 
                 var remain = _factoryModel.RemainingTime.Value;
 
-                while (remain > 0f && !_factoryModel.IsFull.Value)
+                while (remain > 0f && !_factoryModel.IsDepositFull.Value)
                 {
                     await UniTask.Yield(PlayerLoopTiming.Update, _cancellationTokenSource.Token);
 
@@ -108,7 +108,7 @@ namespace Building
 
                 _factoryModel.Deposit.Value += _factoryModel.OutputAmount;
 
-                if (!_factoryModel.IsFull.Value) _factoryModel.RemainingTime.Value = _factoryModel.ProductionTime;
+                if (!_factoryModel.IsDepositFull.Value) _factoryModel.RemainingTime.Value = _factoryModel.ProductionTime;
             }
         }
 
