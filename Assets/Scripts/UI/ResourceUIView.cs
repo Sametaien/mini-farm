@@ -1,5 +1,6 @@
 #region
 
+using Data;
 using Infrastructure;
 using TMPro;
 using UniRx;

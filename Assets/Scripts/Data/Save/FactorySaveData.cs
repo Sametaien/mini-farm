@@ -1,6 +1,6 @@
 using System;
 
-namespace Data
+namespace Data.Save
 {
     [Serializable]
     public class FactorySaveData

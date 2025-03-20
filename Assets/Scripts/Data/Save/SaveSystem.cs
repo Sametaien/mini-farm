@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Data
+namespace Data.Save
 {
     public static class SaveSystem
     {
