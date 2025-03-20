@@ -79,12 +79,15 @@ namespace Infrastructure
 
         private void ApplyOfflineProduction(float offlineSeconds)
         {
-            if (QueueCount.Value > 0 && RemainingTime.Value > 0f)
+            if (RemainingTime.Value > 0f)
             {
                 if (offlineSeconds >= RemainingTime.Value)
                 {
                     Deposit.Value += 1;
-                    QueueCount.Value -= 1;
+
+                    if (QueueCount.Value > 0)
+                        QueueCount.Value -= 1;
+
                     offlineSeconds -= RemainingTime.Value;
                     RemainingTime.Value = 0f;
                 }

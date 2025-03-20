@@ -1,9 +1,10 @@
 #region
 
-using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 #endregion
+
 
 namespace Utils
 {
@@ -11,7 +12,6 @@ namespace Utils
     {
         [SerializeField] private Camera mainCamera;
         [SerializeField] private LayerMask buildingLayer;
-
 
         private Building.Building _selectedBuilding;
 
@@ -24,6 +24,8 @@ namespace Utils
         private void Update()
         {
             if (!Input.GetMouseButtonDown(0)) return;
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
             var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 

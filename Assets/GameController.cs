@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Infrastructure;
 using UnityEngine;
 using Zenject;
@@ -9,6 +10,11 @@ using Zenject;
 public class GameController : MonoBehaviour
 {
     [Inject] private IResourceManager _resourceManager;
+
+    private void Awake()
+    {
+        Application.targetFrameRate = 120;
+    }
 
     private void OnApplicationQuit()
     {
