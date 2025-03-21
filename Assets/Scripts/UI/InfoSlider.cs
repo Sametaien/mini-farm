@@ -46,7 +46,7 @@ namespace UI
                     var progress = 1f - remaining / _factoryModel.ProductionTime;
                     progressSlider.value = Mathf.Clamp01(progress);
 
-                   
+
                     if (isFull)
                         statusText.text = "Full";
                     else if (remaining > 0f)
@@ -56,11 +56,14 @@ namespace UI
                 })
                 .AddTo(_disposable);
 
-            _factoryModel.QueueCount
-                .Subscribe(_ => UpdateCapacityStatusText())
-                .AddTo(_disposable);
+            if (statusText != null)
+            {
+                _factoryModel.QueueCount
+                    .Subscribe(_ => UpdateCapacityStatusText())
+                    .AddTo(_disposable);
 
-            UpdateCapacityStatusText();
+                UpdateCapacityStatusText();
+            }
         }
 
         private void UpdateCapacityStatusText()
